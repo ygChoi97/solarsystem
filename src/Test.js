@@ -5,7 +5,7 @@ import * as THREE from "three";
 import planetData from "./planetData";
 import "./styles.css";
 import sunTexture from "./textures/2k_sun.jpg";
-
+import { ratio } from "./planetData";
 export default function App() {
   return (
     <>
@@ -17,7 +17,7 @@ export default function App() {
       >
         Step by step guide to how I build this
       </a>
-      <Canvas camera={{ position: [0, 20, 25], fov: 45 }}>
+      <Canvas camera={{ position: [0, 20, 25], fov: 75 }}>
       <Suspense fallback={null}>
         <Sun />
         {planetData.map((planet) => (
@@ -34,12 +34,12 @@ function Sun() {
   const texture = useLoader(THREE.TextureLoader, sunTexture);
   return (
     <mesh>
-      <sphereGeometry args={[0.5, 32, 32]} />
+      <sphereGeometry args={[1392700/2*ratio, 32, 32]} />
       <meshStandardMaterial map={texture} />
     </mesh>
   );
 }
-function Planet({ planet: { color, xRadius, zRadius, size, speed, offset, rotationSpeed, textureMap } }) {
+function Planet({ planet: { xRadius, zRadius, size, speed, offset, rotationSpeed, textureMap } }) {
     const planetRef = React.useRef();
     const texture = useLoader(THREE.TextureLoader, textureMap);
     useFrame(({clock})=>{
