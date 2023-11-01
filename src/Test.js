@@ -2,10 +2,9 @@ import React, { Suspense } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import planetData from "./planetData";
+import planetData, { scale } from "./planetData";
 import "./styles.css";
 import sunTexture from "./textures/2k_sun.jpg";
-import { ratio } from "./planetData";
 export default function App() {
   return (
     <>
@@ -17,7 +16,7 @@ export default function App() {
       >
         Step by step guide to how I build this
       </a>
-      <Canvas camera={{ position: [0, 20, 25], fov: 75 }}>
+      <Canvas style={{ backgroundColor: "black" }} camera={{ position: [0, 20, 25], fov: 95 }} >
       <Suspense fallback={null}>
         <Sun />
         {planetData.map((planet) => (
@@ -34,15 +33,16 @@ function Sun() {
   const texture = useLoader(THREE.TextureLoader, sunTexture);
   return (
     <mesh>
-      <sphereGeometry args={[1392700/2*ratio, 32, 32]} />
+      <sphereGeometry args={[1392700/2*scale, 32, 32]} />
       <meshStandardMaterial map={texture} />
     </mesh>
   );
 }
-function Planet({ planet: { xRadius, zRadius, size, speed, offset, rotationSpeed, textureMap } }) {
+function Planet({ planet: { id, name, xRadius, zRadius, size, speed, offset, rotationSpeed, textureMap } }) {
     const planetRef = React.useRef();
     const texture = useLoader(THREE.TextureLoader, textureMap);
     useFrame(({clock})=>{
+        
         const t = clock.getElapsedTime()*speed+offset;
         const x = xRadius*Math.sin(t);
         const z = zRadius*Math.cos(t);
@@ -50,6 +50,14 @@ function Planet({ planet: { xRadius, zRadius, size, speed, offset, rotationSpeed
         planetRef.current.position.x = x;
         planetRef.current.position.z = z;
         planetRef.current.rotation.y += rotationSpeed;
+
+        if(name === 'earth' && id === 2)
+        console.log(planetRef)
+           console.log(planetRef.current.rotation.y / 3.141592 /2)
+
+        // if(id === 2 && name === 'earth' && planetRef.current.rotation.y > 365)
+        //    speed =0;
+        
         
     })
   return (
@@ -74,8 +82,8 @@ function Lights() {
 
 function Ecliptic({ xRadius = 1, zRadius = 1 }) {
   const points = [];
-  for (let index = 0; index < 64; index++) {
-    const angle = (index / 64) * 2 * Math.PI;
+  for (let index = 0; index < 512; index++) {
+    const angle = (index / 512) * 2 * Math.PI;
     const x = xRadius * Math.cos(angle);
     const z = zRadius * Math.sin(angle);
     points.push(new THREE.Vector3(x, 0, z));
